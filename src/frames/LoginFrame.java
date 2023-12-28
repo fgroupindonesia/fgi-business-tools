@@ -1,22 +1,28 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package frames;
+
+import config.SystemApp;
+import config.SystemPath;
+import helper.DBTransactions;
+import helper.PopupMessage;
+import helper.UIForm;
+import helper.objects.UserSettings;
 
 /**
  *
  * @author asus
  */
-public class LoginFrame extends javax.swing.JFrame {
+public class LoginFrame extends WindowsSkeleton {
 
     /**
      * Creates new form LoginFrame
      */
     public LoginFrame() {
+        super.windowsTheme();
         initComponents();
+        this.setTitle(SystemApp.APP_NAME);
     }
+
+    DBTransactions db = new DBTransactions(SystemPath.DB_FILE);
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -31,16 +37,16 @@ public class LoginFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        textfield_username = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        textfield_pass = new javax.swing.JPasswordField();
         jPanel3 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        label_forgot_pass = new javax.swing.JLabel();
+        buttonLogin = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new java.awt.Dimension(600, 400));
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
 
         jPanel1.setBackground(new java.awt.Color(0, 153, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(300, 356));
@@ -81,16 +87,45 @@ public class LoginFrame extends javax.swing.JFrame {
 
         jLabel2.setText("Username : ");
         jPanel2.add(jLabel2);
-        jPanel2.add(jTextField1);
+
+        textfield_username.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textfield_usernameActionPerformed(evt);
+            }
+        });
+        jPanel2.add(textfield_username);
 
         jLabel3.setText("Password : ");
         jPanel2.add(jLabel3);
-        jPanel2.add(jTextField2);
+
+        textfield_pass.setText("jPasswordField1");
+        textfield_pass.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                textfield_passActionPerformed(evt);
+            }
+        });
+        jPanel2.add(textfield_pass);
 
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
-        jButton1.setText("Login");
-        jPanel3.add(jButton1);
+        label_forgot_pass.setForeground(new java.awt.Color(0, 0, 204));
+        label_forgot_pass.setText("<html><u>Forgot Password</u></html>");
+        label_forgot_pass.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        label_forgot_pass.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                label_forgot_passMouseClicked(evt);
+            }
+        });
+        jPanel3.add(label_forgot_pass);
+
+        buttonLogin.setText("Login");
+        buttonLogin.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        buttonLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonLoginActionPerformed(evt);
+            }
+        });
+        jPanel3.add(buttonLogin);
 
         jPanel2.add(jPanel3);
 
@@ -99,6 +134,47 @@ public class LoginFrame extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    UserSettings localUser;
+
+    private void buttonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonLoginActionPerformed
+
+        tryLogging();
+
+
+    }//GEN-LAST:event_buttonLoginActionPerformed
+
+    private void tryLogging(){
+        localUser = db.select_specific_UserSettings(1);
+
+        if (localUser.getPass().equalsIgnoreCase(UIForm.getTextPass(textfield_pass)) && localUser.getUsername().equalsIgnoreCase(UIForm.getText(textfield_username))) {
+            DashboardFrame dsh = new DashboardFrame(this);
+            dsh.setVisible(true);
+
+            this.setVisible(false);
+
+        }else {
+            PopupMessage.showError("Invalid login cridential!");
+        }
+    }
+    
+    private void textfield_usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textfield_usernameActionPerformed
+       textfield_pass.requestFocus();
+       textfield_pass.selectAll();
+    }//GEN-LAST:event_textfield_usernameActionPerformed
+
+    private void textfield_passActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textfield_passActionPerformed
+        tryLogging();
+    }//GEN-LAST:event_textfield_passActionPerformed
+
+    private void label_forgot_passMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_label_forgot_passMouseClicked
+
+        QRFrame window  = new QRFrame(this);
+        window.setVisible(true);
+        
+        this.setVisible(false);
+        
+    }//GEN-LAST:event_label_forgot_passMouseClicked
 
     /**
      * @param args the command line arguments
@@ -111,7 +187,7 @@ public class LoginFrame extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Windows".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -136,14 +212,15 @@ public class LoginFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton buttonLogin;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JLabel label_forgot_pass;
+    private javax.swing.JPasswordField textfield_pass;
+    private javax.swing.JTextField textfield_username;
     // End of variables declaration//GEN-END:variables
 }
